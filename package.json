@@ -1,0 +1,17 @@
+{
+  "name": "nextjs-notes",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A server-rendered Next.js notes app in a Docker container; notes live in a Back4app backend.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "node .next/standalone/server.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "next": "^15.5.25",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  }
+}
