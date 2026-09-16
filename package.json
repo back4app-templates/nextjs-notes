@@ -1,6 +1,6 @@
 {
   "name": "nextjs-notes",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "description": "A server-rendered Next.js notes app in a Docker container; notes live in a Back4app backend.",
   "scripts": {

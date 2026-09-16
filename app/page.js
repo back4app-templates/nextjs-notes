@@ -5,7 +5,8 @@ import { addNote } from "./actions";
 
 export const dynamic = "force-dynamic";
 
-export default async function Home() {
+export default async function Home({ searchParams }) {
+  const { error } = await searchParams;
   const notes = await listNotes();
   const renderedAt = new Date().toISOString();
   return (
@@ -15,6 +16,7 @@ export default async function Home() {
         <input name="text" placeholder="Write a note" required style={{ flex: 1, padding: 10, fontSize: 16 }} />
         <button style={{ padding: "10px 16px", fontSize: 16 }}>Add</button>
       </form>
+      {error && <p role="alert" style={{ color: "#b3261e" }}>{error}</p>}
       <ul>
         {notes.map((n) => (
           <li key={n.objectId}>{n.text} <small style={{ color: "#888" }}>{new Date(n.createdAt).toLocaleString("en-US", { timeZone: "UTC" })} UTC</small></li>
