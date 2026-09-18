@@ -1,14 +1,12 @@
 # nextjs-notes
 
-**A server-rendered Next.js 15 app deployed from GitHub into a container, with its data in a managed Back4app backend — the page arrives as complete HTML and the API keys never reach the browser.**
+**Deploy a server-rendered Next.js 15 app from GitHub with a backend: SSR on a container, data off it.** A notes app in 94 lines including the Dockerfile: a server component reads from a managed [Back4app](https://www.back4app.com/) backend, a server action writes to it, the page arrives as complete HTML, and the API keys never reach the browser.
 
-This is the companion repository for the Back4app blog post *How to Deploy a Next.js App From GitHub With a Backend — SSR on a Container, Data Off It*. Everything in the post was measured on this exact code, on September 15–16, 2026.
+Measured on September 15–16, 2026, on Back4app Containers: Deploy click → `DEPLOYMENT READY` in **6 min 4 s** (five of them `next build`), a note added through the form in the database **~300 ms** later, **0** keys in the served HTML. Every number in the article comes from this exact code.
 
-> Article: link added at publication.
+> Read the article: *How to Deploy a Next.js App From GitHub With a Backend — SSR on a Container, Data Off It* — link added at publication.
 
 ## What it does
-
-A notes page in 94 lines including the Dockerfile:
 
 - `app/page.js` — a **server component**: fetches the notes from the backend on every request (`force-dynamic` + `cache: "no-store"`), renders the list and a form, and stamps the time it rendered.
 - `app/actions.js` — a **server action**: the form posts to it, it creates the note through the backend, and redirects back; a rejected note comes back as `/?error=<the backend's message>` instead of a 500 page.
@@ -24,7 +22,7 @@ browser ──GET /──▶ ┌────────────────
                    └────────────────────────┘
 ```
 
-## What we measured (September 2026, Back4app Containers)
+## What we measured
 
 | Measurement | Result |
 |---|---|
@@ -36,7 +34,16 @@ browser ──GET /──▶ ┌────────────────
 | `git push` with Autodeploy on → new version live | 4 min 34 s |
 | RAM at idle | 45–47 MB |
 
-Two findings: `next build` with `output: "standalone"` copies your `.env` into `.next/standalone/` (keep `.env` in `.dockerignore`, as this repo does), and a server action that throws shows Next.js's generic *Application error* page — catch and `redirect()` instead (v1.1.0 here).
+Two findings: `next build` with `output: "standalone"` copies your `.env` into `.next/standalone/` (keep `.env` in `.dockerignore`, as this repo does), and a server action that throws shows Next.js's generic *Application error* page. Catch and `redirect()` instead (v1.1.0 here).
+
+## Deploy your own
+
+1. **Create a free account.** Sign up at [https://www.back4app.com/signup](https://www.back4app.com/signup). One account gives you both halves: **Build your Backend** (the Note class and its rule) and **Containers** (where `next start` runs).
+2. **Backend:** New App → Build your Backend. On Overview copy the App ID and the REST API key. **Cloud Code → main.js**: paste `cloud/main.js`, Deploy, then edit and deploy again (the first deploy on a fresh backend ships nothing); prove the hook with a request.
+3. **Container:** push this repo to GitHub, then **Containers → New App → Deploy from GitHub**. Set `PARSE_APP_ID` and `PARSE_REST_KEY` as environment variables and the health check to `/healthz`. Deploy, and expect the first build to take about five minutes.
+4. Verify: `./deploy-check.sh https://<your-app>.b4a.run`, then add a note through the form and watch it appear in Database → Note.
+
+On the free plan the container lives 60 minutes from the *start* of the deploy; a six-minute build leaves 54. For a permanent URL and Autodeploy (Settings → Build & deploy), change the plan; Shared starts at $5/month as of September 2026.
 
 ## Run locally
 
@@ -46,14 +53,9 @@ cp .env.example .env      # PARSE_APP_ID, PARSE_REST_KEY
 node --env-file=.env node_modules/.bin/next dev
 ```
 
-## Deploy
+## What the platform gives you
 
-1. Create a Back4app backend app; paste `cloud/main.js` into **Cloud Code → main.js** and deploy — twice: the first deploy on a fresh backend ships nothing, so prove the hook with a request.
-2. Push this repo to GitHub, then **Back4app Containers → New App → Deploy from GitHub**.
-3. Set `PARSE_APP_ID` and `PARSE_REST_KEY`; set the health check to `/healthz`; deploy. Expect the first build to take about five minutes.
-4. Verify: `./deploy-check.sh https://<your-app>.b4a.run`, then add a note through the form.
-
-On the free plan the container lives 60 minutes from the *start* of the deploy — a six-minute build leaves 54 minutes. For a permanent URL and Autodeploy (Settings → Build & deploy), change the plan; Shared starts at $5/month as of September 2026.
+Containers build the two-stage Dockerfile, run `node server.js` behind HTTPS on a public URL and redeploy on push. The backend is a managed Parse Server with a database, REST and GraphQL APIs, Cloud Code and a dashboard where every Note is a row you can inspect. Documentation: [https://www.back4app.com/docs-containers](https://www.back4app.com/docs-containers) · [https://www.back4app.com/docs](https://www.back4app.com/docs).
 
 ## License
 
