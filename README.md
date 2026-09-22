@@ -4,7 +4,7 @@
 
 Measured on September 15–16, 2026, on Back4app Containers: Deploy click → `DEPLOYMENT READY` in **6 min 4 s** (five of them `next build`), a note added through the form in the database **~300 ms** later, **0** keys in the served HTML. Every number in the article comes from this exact code.
 
-> **Read the article:** [How to Deploy a Next.js App From GitHub With a Backend — SSR on a Container, Data Off It](https://www.back4app.com/blog/deploy-nextjs-app-github-backend)
+> **Read the article:** [How to Deploy a Next.js SSR App With Docker and a Backend](https://www.back4app.com/blog/deploy-nextjs-app-github-backend)
 
 ## What it does
 
